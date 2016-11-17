@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>com.dingjz.wubi</string>
+	<key>category</key>
+	<string>Tools</string>
+	<key>connections</key>
+	<dict>
+		<key>241CC48A-DBE3-4F8A-BCFD-70EB76FC86A6</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>6711AE73-268A-4A7C-858C-765D07C105C0</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>6711AE73-268A-4A7C-858C-765D07C105C0</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>68E739A0-3705-4035-817F-B53385731181</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>68E739A0-3705-4035-817F-B53385731181</key>
+		<array/>
+	</dict>
+	<key>createdby</key>
+	<string>dingjz</string>
+	<key>description</key>
+	<string>五笔拆字</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>拆字</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>escaping</key>
+				<integer>36</integer>
+				<key>keyword</key>
+				<string>wb</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string></string>
+				<key>script</key>
+				<string>require_once 'workflows.php';
+    $w = new Workflows();
+	$query = "{query}";
+	$url = "http://www.4qx.net/WuBi_Results.php";
+	$body_arr = array('wubi_key' =&gt; $query);
+	// $result = httpPost($body_arr, $url);
+    $options = array(CURLOPT_POST =&gt; "true", CURLOPT_POSTFIELDS =&gt; $body_arr);
+    $result = $w-&gt;request($url, $options);
+        // var_dump($result);
+        // echo $result;
+	//正则匹配
+	// $reg = "/&lt;td.+tab2[^&gt;]+&gt;([^&lt;span&gt;]+)(&lt;span&gt;(.+)&lt;\/span&gt;)/";
+    $imgReg = "/&lt;td.+tab3.+src=.+&gt;/";
+    preg_match_all($imgReg, $result, $imgArr);
+    // print_r($imgArr[0][0]);
+    // echo "\n";
+    preg_match_all('/src=".+"/', $imgArr[0][0], $img);
+    // print_r($img[0][0]);
+    $imgSrc = str_replace("src=\"", "http://www.4qx.net", $img[0][0]);
+    $imgSrc = substr($imgSrc, 0, strlen($imgSrc) - 1);
+    $reg = "/&lt;td.+tab2.+&gt;{1,2}/";
+	$isTrue = preg_match_all($reg, $result, $arr);
+    $arr = $arr[0];
+    if ($isTrue) {
+        $replaceReg[0] = '/&lt;\/?td[^&gt;]*&gt;/';
+        // $replaceReg[1] = "/&lt;\/?strong&gt;{0,2}/";
+        $replaceReg[1] = "/&lt;\/?span&gt;{0,2}/";
+        $x = preg_replace($replaceReg, "", $arr[1]);
+        $res = explode("，", $x);
+    }
+    foreach ($res as $key =&gt; $value) {
+            $valueArr = explode("：", $value);
+            $w-&gt;result( 'alfred', 'alfredapp', "{$valueArr[1]}", "{$valueArr[0]}", "{$imgSrc}", 'yes', 'Alfredapp' ); 
+    }    
+    // echo var_export( $w-&gt;results() );
+    echo $w-&gt;toXml();</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>使用"秋香网"的api查询</string>
+				<key>title</key>
+				<string>拆字</string>
+				<key>type</key>
+				<integer>1</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>DC436B25-D55A-4944-AEEA-9BEE92420B5F</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>keyword</key>
+				<string>wb</string>
+				<key>subtext</key>
+				<string>五笔拆字, 使用xx提供的api</string>
+				<key>text</key>
+				<string>五笔拆字</string>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>241CC48A-DBE3-4F8A-BCFD-70EB76FC86A6</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<true/>
+				<key>escaping</key>
+				<integer>100</integer>
+				<key>script</key>
+				<string>require_once 'workflows.php';
+    $w = new Workflows();
+	$query = "{query}";
+	$url = "http://www.4qx.net/WuBi_Results.php";
+	$body_arr = array('wubi_key' =&gt; $query);
+	// $result = httpPost($body_arr, $url);
+    $options = array(CURLOPT_POST =&gt; "true", CURLOPT_POSTFIELDS =&gt; $body_arr);
+    $result = $w-&gt;request($url, $options);
+        // var_dump($result);
+        // echo $result;
+	//正则匹配
+	// $reg = "/&lt;td.+tab2[^&gt;]+&gt;([^&lt;span&gt;]+)(&lt;span&gt;(.+)&lt;\/span&gt;)/";
+    $imgReg = "/&lt;td.+tab3.+src=.+&gt;/";
+    preg_match_all($imgReg, $result, $imgArr);
+    // print_r($imgArr[0][0]);
+    // echo "\n";
+    preg_match_all('/src=".+"/', $imgArr[0][0], $img);
+    // print_r($img[0][0]);
+    $imgSrc = str_replace("src=\"", "http://www.4qx.net", $img[0][0]);
+    $imgSrc = substr($imgSrc, 0, strlen($imgSrc) - 1);
+    $reg = "/&lt;td.+tab2.+&gt;{1,2}/";
+	$isTrue = preg_match_all($reg, $result, $arr);
+    $arr = $arr[0];
+    if ($isTrue) {
+        $replaceReg[0] = '/&lt;\/?td[^&gt;]*&gt;/';
+        // $replaceReg[1] = "/&lt;\/?strong&gt;{0,2}/";
+        $replaceReg[1] = "/&lt;\/?span&gt;{0,2}/";
+        $x = preg_replace($replaceReg, "", $arr[1]);
+        $res = explode("，", $x);
+    }
+    foreach ($res as $key =&gt; $value) {
+            $valueArr = explode("：", $value);
+            $w-&gt;result( 'alfred', 'alfredapp', "{$valueArr[0]}", "{$valueArr[1]}", "{$imgSrc}", 'yes', 'Alfredapp' ); 
+    }    
+    // echo var_export( $w-&gt;results() );
+    echo $w-&gt;toXml();</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>1</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>6711AE73-268A-4A7C-858C-765D07C105C0</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>largetypetext</key>
+				<string>{query}</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.largetype</string>
+			<key>uid</key>
+			<string>68E739A0-3705-4035-817F-B53385731181</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string>五笔拆字查询, 网上随便找的API</string>
+	<key>uidata</key>
+	<dict>
+		<key>241CC48A-DBE3-4F8A-BCFD-70EB76FC86A6</key>
+		<dict>
+			<key>xpos</key>
+			<integer>180</integer>
+			<key>ypos</key>
+			<integer>300</integer>
+		</dict>
+		<key>6711AE73-268A-4A7C-858C-765D07C105C0</key>
+		<dict>
+			<key>xpos</key>
+			<integer>360</integer>
+			<key>ypos</key>
+			<integer>310</integer>
+		</dict>
+		<key>68E739A0-3705-4035-817F-B53385731181</key>
+		<dict>
+			<key>xpos</key>
+			<integer>530</integer>
+			<key>ypos</key>
+			<integer>310</integer>
+		</dict>
+		<key>DC436B25-D55A-4944-AEEA-9BEE92420B5F</key>
+		<dict>
+			<key>xpos</key>
+			<integer>180</integer>
+			<key>ypos</key>
+			<integer>160</integer>
+		</dict>
+	</dict>
+	<key>version</key>
+	<string>0.1</string>
+	<key>webaddress</key>
+	<string>dingtwo.github.io</string>
+</dict>
+</plist>
